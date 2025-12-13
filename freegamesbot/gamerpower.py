@@ -15,10 +15,13 @@ class Giveaway:
     instructions: str
     open_giveaway_url: str
     image: str
+    thumbnail: str
     platforms: str
     type: str
     published_date: str
     end_date: str
+    users: int
+    status: str
 
     @classmethod
     def from_json(cls, data: Dict[str, Any]) -> "Giveaway":
@@ -30,10 +33,13 @@ class Giveaway:
             instructions=data.get("instructions", ""),
             open_giveaway_url=data.get("open_giveaway_url", ""),
             image=data.get("image", ""),
+            thumbnail=data.get("thumbnail", ""),
             platforms=data.get("platforms", ""),
             type=data.get("type", ""),
             published_date=data.get("published_date", ""),
             end_date=data.get("end_date", ""),
+            users=int(data.get("users", 0) or 0),
+            status=data.get("status", ""),
         )
 
 
@@ -106,5 +112,8 @@ class GamerPowerClient:
 
         response.raise_for_status()
         data = response.json()
+
+        if isinstance(data, dict) and "data" in data:
+            data = data["data"]
 
         return data if isinstance(data, dict) else None
