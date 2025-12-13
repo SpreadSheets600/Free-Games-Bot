@@ -44,10 +44,15 @@ class SettingsRepository:
 
             CREATE TABLE IF NOT EXISTS notified_giveaways (
                 guild_id INTEGER NOT NULL,
-                giveaway_id INTEGER NOT NULL,
+                giveaway_id TEXT NOT NULL,
                 PRIMARY KEY (guild_id, giveaway_id),
                 FOREIGN KEY (guild_id) REFERENCES guild_settings(guild_id)
                     ON DELETE CASCADE
+            );
+
+            CREATE TABLE IF NOT EXISTS bot_state (
+                key TEXT PRIMARY KEY,
+                value TEXT NOT NULL
             );
             """
         )
@@ -97,7 +102,7 @@ class SettingsRepository:
         await cursor.close()
         return [GuildSettings(guild_id=row[0], channel_id=row[1]) for row in rows]
 
-    async def mark_notified(self, guild_id: int, giveaway_id: int) -> None:
+    async def mark_notified(self, guild_id: int, giveaway_id: str) -> None:
         assert self._conn
         async with self._lock:
             await self._conn.execute(
@@ -107,7 +112,7 @@ class SettingsRepository:
 
             await self._conn.commit()
 
-    async def already_notified(self, guild_id: int, giveaway_id: int) -> bool:
+    async def already_notified(self, guild_id: int, giveaway_id: str) -> bool:
         assert self._conn
         cursor = await self._conn.execute(
             "SELECT 1 FROM notified_giveaways WHERE guild_id=? AND giveaway_id=?",
@@ -118,7 +123,7 @@ class SettingsRepository:
         await cursor.close()
         return bool(row)
 
-    async def prune_notified(self, guild_id: int, keep_ids: List[int]) -> None:
+    async def prune_notified(self, guild_id: int, keep_ids: List[str]) -> None:
         assert self._conn
 
         if not keep_ids:
@@ -133,6 +138,30 @@ class SettingsRepository:
             )
 
             await self._conn.commit()
+
+    async def set_bot_state(self, key: str, value: str) -> None:
+        assert self._conn
+        async with self._lock:
+            await self._conn.execute(
+                """
+                INSERT INTO bot_state (key, value)
+                VALUES (?, ?)
+                ON CONFLICT(key) DO UPDATE SET value=excluded.value
+                """,
+                (key, value),
+            )
+            await self._conn.commit()
+
+    async def get_bot_state(
+        self, key: str, default: Optional[str] = None
+    ) -> Optional[str]:
+        assert self._conn
+        cursor = await self._conn.execute(
+            "SELECT value FROM bot_state WHERE key=?", (key,)
+        )
+        row = await cursor.fetchone()
+        await cursor.close()
+        return row[0] if row else default
 
     async def dump_state(self) -> Tuple[int, int]:
         assert self._conn
