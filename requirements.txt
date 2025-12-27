@@ -1,6 +1,0 @@
-httpx
-aiosqlite
-python-dotenv
-py-cord[voice]
-audioop-lts
-psutil
