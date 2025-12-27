@@ -4,7 +4,7 @@ import discord
 import datetime
 from dotenv import load_dotenv
 
-from componenets import ping_command, info_command
+from componenets import general_command
 
 load_dotenv()
 
@@ -59,7 +59,7 @@ async def ping(ctx: discord.ApplicationContext) -> None:
     latency_str = f"- *Latency* : {latency:.2f} ms"
 
     await ctx.respond(
-        view=ping_command.PingView(uptime=uptime_str, latency=latency_str)
+        view=general_command.PingView(uptime=uptime_str, latency=latency_str)
     )
 
 
@@ -67,7 +67,7 @@ async def ping(ctx: discord.ApplicationContext) -> None:
     name="info", description="Get Information About The Bot And It's User"
 )
 async def info(ctx: discord.ApplicationContext) -> None:
-    await ctx.respond(view=info_command.InfoView(created_at=bot.create_time))
+    await ctx.respond(view=general_command.InfoView(created_at=bot.create_time))
 
 
 bot.load_extension("cogs.freegames")
