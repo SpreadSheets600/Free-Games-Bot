@@ -1,4 +1,7 @@
 import discord
+from datetime import datetime
+
+from utilities.tools import get_game_platform
 
 
 class GiveawayView(discord.ui.DesignerView):
@@ -6,6 +9,7 @@ class GiveawayView(discord.ui.DesignerView):
         super().__init__()
 
         container = discord.ui.Container()
+        action_row = discord.ui.ActionRow()
 
         if error is not None:
             container.add_text(f"### Error : \n```{error}```")
@@ -14,26 +18,38 @@ class GiveawayView(discord.ui.DesignerView):
             container.add_text(f"### No Giveaway Data Available For `{giveaway_id}`")
 
         else:
-            action_row = discord.ui.ActionRow()
             media_gallery = discord.ui.MediaGallery()
-            
-            thumbnail = discord.ui.Thumbnail(url=giveaway_data.get("image"))
 
-            header_section = discord.ui.Section(accessory=thumbnail)
+            platform_url = get_game_platform(giveaway_data.get("platforms", ""))
 
-            header_section.add_text("### Giveaway Details")
+            end_date_str = giveaway_data["end_date"].replace(" ", "T")
+            end_date_dt = datetime.fromisoformat(end_date_str)
 
-            container.add_item(header_section)
+            end_date_ts = f"<t:{int(end_date_dt.timestamp())}:R>"
 
-            container.add_text(f"## {giveaway_data['title']}")
+            if platform_url:
+                thumbnail = discord.ui.Thumbnail(url=platform_url)
+                header_section = discord.ui.Section(accessory=thumbnail)
 
-            container.add_separator()
+                header_section.add_text(
+                    f"## {giveaway_data['title'].split('(')[0]}\n### **~~{giveaway_data['worth']}~~** FREE\n**Ends in** {end_date_ts}"
+                )
 
-            container.add_text(f"**Worth :** ~~${giveaway_data['worth']}~~ **FREE**")
-            container.add_text(f"**Platform :** {giveaway_data['platforms']}")
+                container.add_item(header_section)
+            else:
+                container.add_text(f"## {giveaway_data['title'].split('(')[0]}")
 
-            container.add_text(f"**Type :** {giveaway_data['type']}")
-            container.add_text(f"**Ends :** {giveaway_data['end_date']}")
+                container.add_separator()
+
+                container.add_text(
+                    f"## {giveaway_data['title'].split('(')[0]}\n### **~~{giveaway_data['worth']}~~** FREE\n**Ends in** {end_date_ts}"
+                )
+
+            action_row.add_button(
+                label=f"{giveaway_data['type']}",
+                style=discord.ButtonStyle.secondary,
+                disabled=True,
+            )
 
             action_row.add_button(
                 label="View",
@@ -51,6 +67,5 @@ class GiveawayView(discord.ui.DesignerView):
             container.add_text(giveaway_data["instructions"])
 
         self.add_item(container)
-        self.add_item(action_row)
-
-
+        if action_row.children:
+            self.add_item(action_row)
