@@ -4,7 +4,7 @@ import discord
 import datetime
 from dotenv import load_dotenv
 
-from componenets import general_command
+from components import general_command
 
 load_dotenv()
 
@@ -64,7 +64,7 @@ async def ping(ctx: discord.ApplicationContext) -> None:
 
 
 @bot.slash_command(
-    name="info", description="Get Information About The Bot And It's User"
+    name="info", description="Get Information About The Bot And Its User"
 )
 async def info(ctx: discord.ApplicationContext) -> None:
     await ctx.respond(view=general_command.InfoView(created_at=bot.create_time))
