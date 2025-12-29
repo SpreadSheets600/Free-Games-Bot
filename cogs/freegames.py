@@ -2,7 +2,7 @@ import discord
 from discord.ext import commands
 import traceback
 
-import componenets.cog_commands.freegames_command
+import components.cog_commands.freegames_command
 
 from utilities.gamespowered import (
     get_giveaway,
@@ -28,14 +28,14 @@ class FreeGames(commands.Cog):
                 data = None
 
                 await ctx.followup.send(
-                    view=componenets.cog_commands.freegames_command.GiveawayView(
+                    view=components.cog_commands.freegames_command.GiveawayView(
                         giveaway_data=data, giveaway_id=giveaway_id
                     )
                 )
 
             else:
                 await ctx.followup.send(
-                    view=componenets.cog_commands.freegames_command.GiveawayView(
+                    view=components.cog_commands.freegames_command.GiveawayView(
                         giveaway_data=data, giveaway_id=giveaway_id
                     )
                 )
@@ -44,7 +44,7 @@ class FreeGames(commands.Cog):
             print(traceback.format_exc())
             try:
                 await ctx.followup.send(
-                    view=componenets.cog_commands.freegames_command.GiveawayView(
+                    view=components.cog_commands.freegames_command.GiveawayView(
                         giveaway_data=None, giveaway_id=giveaway_id, error=str(e)
                     )
                 )
@@ -104,7 +104,7 @@ class FreeGames(commands.Cog):
             for gw in giveaways:
                 embed.add_field(
                     name=gw.get("title", "Unknown"),
-                    value=f"Worth: ${gw.get('worth', 'N/A')} | [Link]({gw.get('open_giveaway_url', '#')})",
+                    value=f"Worth: {gw.get('worth', 'N/A')} | [Link]({gw.get('open_giveaway_url', '#')})",
                     inline=False,
                 )
 
