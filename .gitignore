@@ -1,5 +1,5 @@
-# Created by https://www.toptal.com/developers/gitignore/api/python
-# Edit at https://www.toptal.com/developers/gitignore?templates=python
+# Created by https://www.toptal.com/developers/gitignore/api/pythonvanilla,python
+# Edit at https://www.toptal.com/developers/gitignore?templates=pythonvanilla,python
 
 ### Python ###
 # Byte-compiled / optimized / DLL files
@@ -173,10 +173,31 @@ poetry.toml
 # LSP config files
 pyrightconfig.json
 
-# End of https://www.toptal.com/developers/gitignore/api/python
+### PythonVanilla ###
+# Byte-compiled / optimized / DLL files
 
-data/
-data
+# C extensions
 
-./data
-data/*
+# Distribution / packaging
+
+# Installer logs
+
+# Unit test / coverage reports
+
+# Translations
+
+# pyenv
+#   For a library or package, you might want to ignore these files since the code is
+#   intended to run in multiple environments; otherwise, check them in:
+# .python-version
+
+# pipenv
+#   According to pypa/pipenv#598, it is recommended to include Pipfile.lock in version control.
+#   However, in case of collaboration, if having platform-specific dependencies or dependencies
+#   having no cross-platform support, pipenv may install dependencies that don't work, or not
+#   install all needed dependencies.
+
+# PEP 582; used by e.g. github.com/David-OConnor/pyflow
+
+
+# End of https://www.toptal.com/developers/gitignore/api/pythonvanilla,python
