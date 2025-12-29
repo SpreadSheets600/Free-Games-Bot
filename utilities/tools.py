@@ -13,6 +13,3 @@ def get_game_platform(platforms: str) -> str | None:
             return platforms_mapping[item_lower][1]
 
     return None
-
-
-get_game_platform("epic-games-store")
