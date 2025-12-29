@@ -32,7 +32,7 @@ class GiveawayView(discord.ui.DesignerView):
                 header_section = discord.ui.Section(accessory=thumbnail)
 
                 header_section.add_text(
-                    f"## {giveaway_data['title'].split('(')[0]}\n### **~~{giveaway_data['worth']}~~** FREE\n**Ends in** {end_date_ts}"
+                    f"## {giveaway_data['title'].split('(')[0]}\n### **Ends in** {end_date_ts}"
                 )
 
                 container.add_item(header_section)
@@ -42,12 +42,18 @@ class GiveawayView(discord.ui.DesignerView):
                 container.add_separator()
 
                 container.add_text(
-                    f"## {giveaway_data['title'].split('(')[0]}\n### **~~{giveaway_data['worth']}~~** FREE\n**Ends in** {end_date_ts}"
+                    f"## {giveaway_data['title'].split('(')[0]}\n### **Ends in** {end_date_ts}"
                 )
 
             action_row.add_button(
                 label=f"{giveaway_data['type']}",
-                style=discord.ButtonStyle.secondary,
+                style=discord.ButtonStyle.primary,
+                disabled=True,
+            )
+
+            action_row.add_button(
+                label=f"{giveaway_data['worth']}",
+                style=discord.ButtonStyle.danger,
                 disabled=True,
             )
 
