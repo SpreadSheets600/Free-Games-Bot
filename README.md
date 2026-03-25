@@ -1,17 +1,46 @@
 # FreeGames Discord Bot
 
-A modular Discord bot (py-cord) that posts new GamerPower giveaways to per-server channels, with slash commands, pagination, and SQLite persistence.
+A Discord bot built on `py-cord` that watches GamerPower RSS feeds, enriches entries with the GamerPower API, and posts new free game drops to the right channel in each server.
 
-## Features
+## What It Does
 
-- Slash commands under `/freegames` (set channel, list giveaways with filters, lookup by id, worth summary).
-- Background loop polls GamerPower and posts new giveaways to the configured channel per guild.
-- Pagination for long lists using buttons.
-- SQLite storage for guild channel mapping and per-guild notified giveaway ids.
+- Polls GamerPower RSS feeds and only announces newly seen entries.
+- Enriches RSS hits with the GamerPower API so posts include full embeds, claim buttons, worth, platform, and timing data.
+- Stores per-server settings in SQLite:
+  - notification channel
+  - ping mode (`off`, `here`, `everyone`, `role`, `user`)
+  - optional platform filter
+  - optional giveaway type filter
+- Maintains an archive of giveaways for search and recent-news browsing.
+- Lets users track games they have played, are playing, completed, dropped, or added to a wishlist.
 
-## Quick start
+## Commands
 
-1. **Install deps** (Python 3.10+ recommended):
+### Server Setup
+
+- `/freegames settings channel <#channel>`
+- `/freegames settings ping <mode> [role] [user]`
+- `/freegames settings filters [platform] [type]`
+- `/freegames settings status`
+
+### Giveaway Commands
+
+- `/freegames list [platform] [type] [sort_by]`
+- `/freegames lookup <giveaway_id>`
+- `/freegames worth [platform] [type]`
+- `/freegames search <query>`
+- `/freegames news [platform] [type]`
+- `/freegames help`
+
+### Played Game Tracking
+
+- `/freegames played add <title> [platform] [status] [notes]`
+- `/freegames played list [member]`
+- `/freegames played remove <title>`
+
+## Setup
+
+1. Create a virtual environment and install dependencies:
 
    ```sh
    python -m venv .venv
@@ -19,23 +48,26 @@ A modular Discord bot (py-cord) that posts new GamerPower giveaways to per-serve
    pip install -r requirements.txt
    ```
 
-2. **Configure env**: copy `.env.example` to `.env` and fill `DISCORD_TOKEN` (bot token). Optionally tweak `POLL_INTERVAL_SECONDS`, `DATABASE_PATH`, `MAX_ITEMS_PER_PAGE`.
-3. **Run**:
+2. Copy `.env.example` to `.env` and set at least `DISCORD_TOKEN`.
+
+3. Start the bot:
 
    ```sh
    python bot.py
    ```
 
-## Slash commands
+## Environment Variables
 
-- `/freegames set-channel <#text-channel>`: set where the bot will post new giveaways (manage server permission required).
-- `/freegames status`: show current channel and counters.
-- `/freegames list [platform] [type] [sort_by]`: fetch live giveaways with pagination.
-- `/freegames lookup <id>`: detailed embed for a specific giveaway.
-- `/freegames worth [platform] [type]`: summary count and USD worth.
+- `DISCORD_TOKEN`: required Discord bot token
+- `DATABASE_PATH`: SQLite file path, default `data/freegames.db`
+- `POLL_INTERVAL_SECONDS`: polling interval, default `900`
+- `GAMERPOWER_BASE_URL`: GamerPower API base URL
+- `RSS_FEEDS`: comma-separated GamerPower RSS feeds to poll
+- `DEVELOPER_USER_ID`: optional user id allowed to use `/dev status`
 
 ## Notes
 
-- Polls GamerPower every `POLL_INTERVAL_SECONDS` (default 900s). API rate limit is 4 req/sec; this bot stays well below it.
-- First poll after configuring a channel will post all currently live giveaways (they are tracked to prevent repeats afterward).
-- Data is stored in `DATABASE_PATH` (defaults to `data/freegames.db`).
+- On first startup, the bot seeds the current RSS entries and does not back-post old giveaways.
+- New giveaway notifications are deduplicated per server.
+- Giveaway archive data is refreshed from GamerPower whenever the bot polls or a user runs live lookup/list commands.
+- GamerPower asks clients to stay below 4 requests per second. This bot stays well under that limit.
